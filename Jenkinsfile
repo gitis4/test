@@ -1,11 +1,22 @@
 pipeline {
     agent any
 
+    options {
+        skipStagesAfterUnstable()
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                echo 'Verifier source code...'
+                echo 'Vérification du code source...'
                 checkout scm 
+            }
+        }
+
+        stage('Fix Windows EBUSY)') {
+            steps {
+                echo 'Nettoyage du fichier de base de données'
+                bat 'IF EXIST C:\\etc\\todos\\todo.db (del /F /Q C:\\etc\\todos\\todo.db) ELSE (echo DB file not found, continuing...)'
             }
         }
 
@@ -33,10 +44,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'Pipeline succeeded!'
+            echo 'Pipeline réussi !'
         }
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline échoué !'
         }
     }
 }
