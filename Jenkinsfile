@@ -1,43 +1,37 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                echo 'verifier code source...'
+                checkout scm 
             }
         }
-        
-        stage('Install Dependencies') {pipeline {
-    agent any
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
+
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                sh 'npm install'
             }
         }
-        
+
         stage('Tests') {
             steps {
-                bat 'npm test'
+                sh 'npm test'
             }
         }
-        
-        stage('Build Docker') {
+
+        stage('Build Docker Image') {
             steps {
-                bat 'docker build -t todo-app .'
+                sh 'docker build -t todo-app .'
             }
         }
     }
-    
+
     post {
+        always {
+            cleanWs()
+        }
         success {
             echo 'Pipeline succeeded!'
         }
