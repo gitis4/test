@@ -1,44 +1,38 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                echo 'Verifier source code...'
+                checkout scm 
             }
         }
-        
-        stage('Install Dependencies') {pipeline {
-    agent any
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
+
         stage('Install Dependencies') {
             steps {
                 bat 'npm install'
             }
         }
-        
+
         stage('Tests') {
             steps {
-                // Ignorer les tests SQLite
+                 // Ignorer les tests SQLite qui échouent sur Windows
                 bat 'npm test -- --testPathIgnorePatterns=sqlite.spec.js || exit 0'
             }
         }
-        
-        stage('Build Docker') {
+
+        stage('Build Docker Image') {
             steps {
                 bat 'docker build -t todo-app .'
             }
         }
     }
-    
+
     post {
+        always {
+            cleanWs()
+        }
         success {
             echo 'Pipeline succeeded!'
         }
