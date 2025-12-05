@@ -4,26 +4,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'verifier code source...'
+                echo 'Verifier source code...'
                 checkout scm 
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Tests') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t todo-app .'
+                bat 'docker build -t todo-app .'
             }
         }
     }
